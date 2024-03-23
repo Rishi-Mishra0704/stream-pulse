@@ -31,3 +31,29 @@ func TestJSONToText_InvalidJSON(t *testing.T) {
 	// Check if an error is returned
 	assert.Error(t, err, "expected error for invalid JSON data")
 }
+
+func TestJSONToYAML(t *testing.T) {
+	// Sample JSON data
+	jsonData := []byte(`{"name": "John", "age": 30, "city": "New York"}`)
+
+	// Expected YAML data
+	expectedYAML := "age: 30\ncity: New York\nname: John\n"
+
+	// Call JSONToYAML function
+	actualYAML, err := JSONToYAML(jsonData)
+
+	// Check if there's no error and the converted YAML matches the expected YAML
+	assert.NoError(t, err, "unexpected error")
+	assert.Equal(t, expectedYAML, actualYAML, "converted YAML should match expected YAML")
+}
+
+func TestJSONToYAML_InvalidJSON(t *testing.T) {
+	// Invalid JSON data
+	invalidJSON := []byte(`{"name": "John", "age": 30, "city": New York}`)
+
+	// Call JSONToYAML function with invalid JSON data
+	_, err := JSONToYAML(invalidJSON)
+
+	// Check if an error is returned
+	assert.Error(t, err, "expected error for invalid JSON data")
+}
