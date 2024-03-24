@@ -7,6 +7,8 @@ import (
 )
 
 func TestJSONToText(t *testing.T) {
+	t.Parallel() // Run this test in parallel with other tests
+
 	// Sample JSON data
 	jsonData := []byte(`{"name": "John", "age": 30, "city": "New York"}`)
 
@@ -22,6 +24,8 @@ func TestJSONToText(t *testing.T) {
 }
 
 func TestJSONToText_InvalidJSON(t *testing.T) {
+	t.Parallel() // Run this test in parallel with other tests
+
 	// Invalid JSON data
 	invalidJSON := []byte(`{"name": "John", "age": 30, "city": New York}`)
 
@@ -33,6 +37,9 @@ func TestJSONToText_InvalidJSON(t *testing.T) {
 }
 
 func TestJSONToText_NestedJSON(t *testing.T) {
+	// This test relies on shared resources and cannot run concurrently
+	// So, it should not have t.Parallel()
+
 	// Nested JSON data
 	nestedJSON := []byte(`{
 		"person": {
@@ -55,3 +62,5 @@ func TestJSONToText_NestedJSON(t *testing.T) {
 	assert.NoError(t, err, "unexpected error")
 	assert.Equal(t, expectedText, actualText, "transformed text should match expected text")
 }
+
+// Reset the test state after each test execution
