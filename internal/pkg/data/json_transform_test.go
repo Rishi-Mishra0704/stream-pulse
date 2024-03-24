@@ -137,3 +137,5 @@ func normalizeYAML(yamlStr string) []string {
 	sort.Strings(lines)
 	return lines
 }
+
+// End of Json to YAML tests

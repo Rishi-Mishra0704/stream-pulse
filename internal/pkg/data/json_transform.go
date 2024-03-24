@@ -79,13 +79,23 @@ func JSONToYAML(jsonData []byte) (string, error) {
 	return yamlData, nil
 }
 
+// toJSONYAML converts the given data structure into YAML format.
+// It takes any data structure as input and returns a string representing the YAML format.
+// If there is an error during encoding, it returns an empty string and the error.
 func toJSONYAML(data interface{}) (string, error) {
+	// Create a string builder to store the YAML output
 	var buf strings.Builder
+
+	// Create a new YAML encoder with an indentation level of 2 spaces
 	encoder := yaml.NewEncoder(&buf)
 	encoder.SetIndent(2)
+
+	// Encode the data into YAML format and write it to the string builder
 	err := encoder.Encode(data)
 	if err != nil {
 		return "", err
 	}
+
+	// Return the YAML string and no error
 	return buf.String(), nil
 }
