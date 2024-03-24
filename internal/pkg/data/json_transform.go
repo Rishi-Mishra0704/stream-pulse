@@ -5,6 +5,27 @@ import (
 	"fmt"
 )
 
+// JSONToText converts JSON data into a text format.
+// It takes JSON data as input and returns a string representing the data in a text format.
+// If there is an error during unmarshalling or processing, it returns an error.
+/*
+Example:
+	{
+		"person": {
+			"name": "John",
+			"age": 30,
+			"address": {
+				"city": "New York",
+				"zipcode": "10001"
+			}
+		}
+	}
+Output:
+	person.name: John
+	person.age: 30
+	person.address.city: New York
+	person.address.zipcode: 10001
+*/
 func JSONToText(jsonData []byte) (string, error) {
 	var data map[string]interface{}
 
@@ -19,6 +40,8 @@ func JSONToText(jsonData []byte) (string, error) {
 	return text, nil
 }
 
+// processJSON recursively processes nested JSON data and converts it into text.
+// It takes a JSON object and a prefix string as input and returns the converted text.
 func processJSON(data map[string]interface{}, prefix string) string {
 	var text string
 
