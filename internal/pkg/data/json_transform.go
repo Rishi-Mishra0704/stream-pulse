@@ -4,9 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"sync"
 
 	"gopkg.in/yaml.v3"
 )
+
+var encoderPool = sync.Pool{
+	New: func() interface{} {
+		// Initialize a new YAML encoder with default settings
+		return yaml.NewEncoder(new(strings.Builder))
+	},
+}
 
 // JSONToText converts JSON data into a text format.
 // It takes JSON data as input and returns a string representing the data in a text format.
@@ -78,31 +86,20 @@ func JSONToYAML(jsonData []byte) (string, error) {
 		return "", err
 	}
 
-	yamlData, err := toJSONYAML(data)
-	if err != nil {
-		return "", err
-	}
+	// Get a YAML encoder from the pool
+	encoder := encoderPool.Get().(*yaml.Encoder)
+	defer encoderPool.Put(encoder)
 
-	return yamlData, nil
-}
-
-// toJSONYAML converts the given data structure into YAML format.
-// It takes any data structure as input and returns a string representing the YAML format.
-// If there is an error during encoding, it returns an empty string and the error.
-func toJSONYAML(data interface{}) (string, error) {
-	// Create a string builder to store the YAML output
+	// Create a new strings.Builder for each conversion
 	var buf strings.Builder
-
-	// Create a new YAML encoder with an indentation level of 2 spaces
-	encoder := yaml.NewEncoder(&buf)
+	buf.Grow(len(jsonData) * 2) // Preallocate buffer size
+	// Encode the data into YAML format and write it to the buffer
 	encoder.SetIndent(2)
-
-	// Encode the data into YAML format and write it to the string builder
-	err := encoder.Encode(data)
+	err = encoder.Encode(data)
 	if err != nil {
 		return "", err
 	}
 
-	// Return the YAML string and no error
+	// Return the YAML string
 	return buf.String(), nil
 }
