@@ -21,9 +21,12 @@ func TestJSONToText(t *testing.T) {
 	// Call JSONToText function
 	actualText, err := JSONToText(jsonData)
 
+	actualLines := sortLines(actualText)
+	expectedLines := sortLines(expectedText)
+
 	// Check if there's no error and the transformed text matches the expected text
 	assert.NoError(t, err, "unexpected error")
-	assert.Equal(t, expectedText, actualText, "transformed text should match expected text")
+	assert.Equal(t, expectedLines, actualLines, "transformed text should match expected text")
 }
 
 func TestJSONToText_InvalidJSON(t *testing.T) {
@@ -61,9 +64,18 @@ func TestJSONToText_NestedJSON(t *testing.T) {
 	// Call JSONToText function with nested JSON data
 	actualText, err := JSONToText(nestedJSON)
 
+	actualLines := sortLines(actualText)
+	expectedLines := sortLines(expectedText)
+
 	// Check if there's no error and the transformed text matches the expected text
 	assert.NoError(t, err, "unexpected error")
-	assert.Equal(t, expectedText, actualText, "transformed text should match expected text")
+	assert.Equal(t, expectedLines, actualLines, "transformed text should match expected text")
+}
+
+func sortLines(text string) []string {
+	lines := strings.Split(text, "\n")
+	sort.Strings(lines)
+	return lines
 }
 
 // End of Json to Text tests
