@@ -1,11 +1,14 @@
 package data
 
 import (
+	"sort"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
+// Start of Json to Text tests
 func TestJSONToText(t *testing.T) {
 	t.Parallel() // Run this test in parallel with other tests
 
@@ -63,4 +66,74 @@ func TestJSONToText_NestedJSON(t *testing.T) {
 	assert.Equal(t, expectedText, actualText, "transformed text should match expected text")
 }
 
-// Reset the test state after each test execution
+// End of Json to Text tests
+
+// Start of Json to YAML tests
+func TestJSONToYAML(t *testing.T) {
+	t.Parallel()
+	// Sample JSON data
+	jsonData := []byte(`{"name": "John", "age": 30, "city": "New York"}`)
+
+	// Expected YAML data
+	expectedYAML := "age: 30\ncity: New York\nname: John\n"
+
+	// Call JSONToYAML function
+	actualYAML, err := JSONToYAML(jsonData)
+
+	// Check if there's no error and the converted YAML matches the expected YAML
+	assert.NoError(t, err, "unexpected error")
+	assert.Equal(t, expectedYAML, actualYAML, "converted YAML should match expected YAML")
+}
+
+func TestJSONToYAML_InvalidJSON(t *testing.T) {
+	t.Parallel()
+	// Invalid JSON data
+	invalidJSON := []byte(`{"name": "John", "age": 30, "city": New York}`)
+
+	// Call JSONToYAML function with invalid JSON data
+	_, err := JSONToYAML(invalidJSON)
+
+	// Check if an error is returned
+	assert.Error(t, err, "expected error for invalid JSON data")
+}
+
+func TestJSONToYAML_NestedJSON(t *testing.T) {
+	// Nested JSON data
+	nestedJSON := []byte(`{
+		"person": {
+			"name": "John",
+			"age": 30,
+			"address": {
+				"city": "New York",
+				"zipcode": "10001"
+			}
+		}
+	}`)
+
+	// Expected YAML data with keys in a specific order and consistent indentation
+	expectedYAML := `person:
+  name: John
+  age: 30
+  address:
+    city: New York
+    zipcode: "10001"
+`
+
+	// Call JSONToYAML function with nested JSON data
+	actualYAML, err := JSONToYAML(nestedJSON)
+	assert.NoError(t, err, "unexpected error")
+
+	// Normalize YAML strings
+	expectedLines := normalizeYAML(expectedYAML)
+	actualLines := normalizeYAML(actualYAML)
+
+	// Compare normalized YAML strings
+	assert.Equal(t, expectedLines, actualLines, "normalized YAML strings should match")
+}
+
+// normalizeYAML splits the YAML string into lines and sorts them alphabetically
+func normalizeYAML(yamlStr string) []string {
+	lines := strings.Split(yamlStr, "\n")
+	sort.Strings(lines)
+	return lines
+}
