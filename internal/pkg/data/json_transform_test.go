@@ -71,6 +71,25 @@ func TestJSONToText_NestedJSON(t *testing.T) {
 	assert.NoError(t, err, "unexpected error")
 	assert.Equal(t, expectedLines, actualLines, "transformed text should match expected text")
 }
+func TestJSONToText_Array(t *testing.T) {
+	t.Parallel() // Run this test in parallel with other tests
+
+	// Sample JSON data with an array
+	jsonData := []byte(`{"names": ["John", "Alice", "Michael"]}`)
+
+	// Expected transformed text
+	expectedText := "names[0]: John\nnames[1]: Alice\nnames[2]: Michael\n"
+
+	// Call JSONToText function
+	actualText, err := JSONToText(jsonData)
+
+	actualLines := sortLines(actualText)
+	expectedLines := sortLines(expectedText)
+
+	// Check if there's no error and the transformed text matches the expected text
+	assert.NoError(t, err, "unexpected error")
+	assert.Equal(t, expectedLines, actualLines, "transformed text should match expected text")
+}
 
 func sortLines(text string) []string {
 	lines := strings.Split(text, "\n")

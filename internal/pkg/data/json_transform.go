@@ -30,10 +30,9 @@ Output:
 	person.address.zipcode: 10001
 */
 func JSONToText(jsonData []byte) (string, error) {
-	var data map[string]interface{}
+	var data interface{}
 
 	err := json.Unmarshal(jsonData, &data)
-
 	if err != nil {
 		return "", err
 	}
@@ -45,19 +44,27 @@ func JSONToText(jsonData []byte) (string, error) {
 
 // processJSON recursively processes nested JSON data and converts it into text.
 // It takes a JSON object and a prefix string as input and returns the converted text.
-func processJSONForText(data map[string]interface{}, prefix string) string {
-	var text string
+func processJSONForText(data interface{}, prefix string) string {
+	var text strings.Builder
 
-	for key, value := range data {
-		switch v := value.(type) {
-		case map[string]interface{}:
-			text += processJSONForText(v, prefix+key+".")
-		default:
-			text += fmt.Sprintf("%s%s: %v\n", prefix, key, value)
+	switch v := data.(type) {
+	case map[string]interface{}:
+		for key, value := range v {
+			if _, ok := value.(map[string]interface{}); ok {
+				text.WriteString(processJSONForText(value, prefix+key+"."))
+			} else {
+				text.WriteString(processJSONForText(value, prefix+key+""))
+			}
 		}
+	case []interface{}:
+		for i, item := range v {
+			text.WriteString(processJSONForText(item, fmt.Sprintf("%s[%d]", prefix, i)))
+		}
+	default:
+		text.WriteString(fmt.Sprintf("%s: %v\n", prefix, v))
 	}
 
-	return text
+	return text.String()
 }
 
 // JSONToYAML converts JSON data into YAML format.
